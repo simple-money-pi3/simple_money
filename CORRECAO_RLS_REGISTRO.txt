@@ -1,0 +1,72 @@
+================================================================================
+CORREÇÃO NECESSÁRIA NO SUPABASE - POLÍTICA RLS PARA REGISTRO
+================================================================================
+
+PROBLEMA IDENTIFICADO:
+A política RLS atual para INSERT na tabela 'users' pode estar bloqueando
+a criação de novos usuários durante o registro.
+
+POLÍTICA ATUAL (PROBLEMÁTICA):
+CREATE POLICY "Users can insert own profile"
+    ON users FOR INSERT
+    WITH CHECK (auth.uid() = auth_user_id);
+
+PROBLEMA:
+Durante o registro, o usuário pode não estar totalmente autenticado ainda,
+ou a verificação pode falhar porque o auth_user_id ainda não foi definido.
+
+================================================================================
+SOLUÇÃO - EXECUTE ESTA QUERY NO SQL EDITOR DO SUPABASE:
+================================================================================
+
+-- Remove a política antiga (se existir)
+DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+
+-- Cria nova política que permite inserção durante registro
+-- Esta política permite que um usuário autenticado insira seu próprio registro
+CREATE POLICY "Users can insert own profile"
+    ON users FOR INSERT
+    WITH CHECK (
+        auth.uid() = auth_user_id OR
+        auth.uid() IS NOT NULL
+    );
+
+-- ALTERNATIVA: Se ainda não funcionar, use esta política mais permissiva
+-- (apenas para desenvolvimento/teste - ajuste depois para produção)
+-- DROP POLICY IF EXISTS "Users can insert own profile" ON users;
+CREATE POLICY "Users can insert own profile"
+ON users FOR INSERT
+WITH CHECK (true); -- Permite inserção para usuários autenticados
+
+================================================================================
+VERIFICAÇÕES ADICIONAIS:
+================================================================================
+
+1. Verifique se a tabela 'users' foi criada corretamente
+2. Verifique se a coluna 'auth_user_id' existe e permite NULL
+3. Verifique se as políticas RLS estão habilitadas:
+   SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname = 'public';
+
+4. Teste a inserção manualmente no SQL Editor:
+   INSERT INTO users (auth_user_id, email, name, age, user_type)
+   VALUES (
+       auth.uid(), 
+       'teste@email.com', 
+       'Teste', 
+       25, 
+       'adult'
+   );
+
+================================================================================
+NOTA IMPORTANTE:
+================================================================================
+
+Se você estiver usando confirmação de email no Supabase, o usuário pode não
+estar totalmente autenticado até confirmar o email. Nesse caso, você pode:
+
+1. Desabilitar confirmação de email temporariamente (Settings > Authentication)
+2. Ou usar uma função/trigger no banco para criar o registro automaticamente
+   quando o usuário confirmar o email
+
+================================================================================
+

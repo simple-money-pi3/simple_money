@@ -1,0 +1,497 @@
+================================================================================
+                    DOCUMENTAÇÃO DE ERROS - SIMPLEMONEY
+================================================================================
+
+Este arquivo contém a descrição completa de todos os erros possíveis que podem
+ocorrer na aplicação SimpleMoney, incluindo códigos de erro, mensagens e
+significados.
+
+================================================================================
+1. ERROS DE AUTENTICAÇÃO (SUPABASE AUTH)
+================================================================================
+
+1.1. Invalid login credentials
+   Código: Não específico (mensagem de erro)
+   Significado: Email ou senha incorretos fornecidos durante o login
+   Onde ocorre: app/login/page.jsx, lib/store.js (função login)
+   Solução: Verificar se o email e senha estão corretos
+   Tratamento: Mensagem exibida: "Email ou senha incorretos. Verifique suas credenciais."
+
+1.2. Email not confirmed
+   Código: Não específico (mensagem de erro)
+   Significado: O email do usuário ainda não foi confirmado
+   Onde ocorre: app/login/page.jsx
+   Solução: Verificar o email e clicar no link de confirmação
+   Tratamento: Mensagem exibida: "Por favor, confirme seu email antes de fazer login."
+
+1.3. User not found
+   Código: Não específico
+   Significado: Usuário não encontrado na tabela users após autenticação
+   Onde ocorre: lib/store.js (função login)
+   Solução: Verificar se o usuário foi criado corretamente no banco de dados
+
+1.4. Falha ao criar usuário de autenticação
+   Código: Não específico
+   Significado: Falha ao criar usuário no Supabase Auth durante registro
+   Onde ocorre: lib/store.js (função register)
+   Solução: Verificar configurações do Supabase Auth
+
+================================================================================
+2. ERROS DE BANCO DE DADOS (POSTGRESQL/SUPABASE)
+================================================================================
+
+2.1. PGRST116
+   Código: PGRST116
+   Significado: Nenhum registro encontrado (usado para verificar se usuário existe)
+   Onde ocorre: lib/store.js (função handleOAuthCallback)
+   Solução: Normal - indica que o usuário não existe e precisa ser criado
+   Tratamento: Criação automática de novo usuário
+
+2.2. 42501 - Permissão negada (RLS)
+   Código: 42501
+   Significado: Row Level Security (RLS) bloqueou a operação
+   Onde ocorre: lib/store.js (função register)
+   Solução: Configurar políticas RLS no Supabase ou executar query de correção
+   Tratamento: Mensagem exibida: "Permissão negada. Execute a query de correção RLS no Supabase."
+
+2.3. 23505 - Violação de constraint única (duplicata)
+   Código: 23505
+   Significado: Tentativa de inserir registro com valor único duplicado (ex: email)
+   Onde ocorre: lib/store.js (função register)
+   Solução: Usar outro email ou fazer login com a conta existente
+   Tratamento: Mensagem exibida: "Este email já está cadastrado."
+
+2.4. 23503 - Violação de foreign key
+   Código: 23503
+   Significado: Referência a registro que não existe (ex: auth_user_id inválido)
+   Onde ocorre: lib/store.js (função register)
+   Solução: Verificar se o usuário de autenticação foi criado corretamente
+   Tratamento: Mensagem exibida: "Erro de referência. Verifique se o usuário de autenticação foi criado."
+
+2.5. 23502 - Violação de NOT NULL
+   Código: 23502
+   Significado: Tentativa de inserir NULL em campo obrigatório
+   Onde ocorre: Qualquer operação de INSERT/UPDATE
+   Solução: Verificar se todos os campos obrigatórios estão preenchidos
+
+2.6. 23514 - Violação de CHECK constraint
+   Código: 23514
+   Significado: Valor não atende à constraint CHECK definida na tabela
+   Onde ocorre: Qualquer operação de INSERT/UPDATE
+   Solução: Verificar se o valor atende às regras de validação do banco
+
+2.7. 42P01 - Tabela não existe
+   Código: 42P01
+   Significado: Tabela referenciada não existe no banco de dados
+   Onde ocorre: Qualquer query que referencia tabela inexistente
+   Solução: Criar a tabela no banco de dados ou verificar nome da tabela
+
+2.8. 42703 - Coluna não existe
+   Código: 42703
+   Significado: Coluna referenciada não existe na tabela
+   Onde ocorre: Qualquer query que referencia coluna inexistente
+   Solução: Verificar se a coluna existe ou criar migration
+
+================================================================================
+3. ERROS DE OAUTH (GOOGLE LOGIN)
+================================================================================
+
+3.1. provider is not enabled / Unsupported provider
+   Código: 400, error_code: "validation_failed"
+   Mensagem: "Unsupported provider: provider is not enabled"
+   Significado: Google OAuth não está habilitado no Supabase
+   Onde ocorre: app/login/page.jsx, app/auth/callback/page.jsx, lib/store.js
+   Solução: Habilitar Google OAuth no painel do Supabase
+   Tratamento: Mensagem exibida: "Login com Google não está configurado. Por favor, entre em contato com o suporte ou use email e senha."
+
+3.2. validation_failed
+   Código: 400, error_code: "validation_failed"
+   Significado: Configuração do Google OAuth incompleta ou inválida
+   Onde ocorre: app/login/page.jsx
+   Solução: Verificar Client ID e Client Secret no Supabase
+   Tratamento: Mensagem exibida: "Configuração do Google OAuth incompleta. Use email e senha para fazer login."
+
+3.3. Nenhuma sessão encontrada
+   Código: Não específico (erro customizado)
+   Significado: Sessão OAuth não foi criada após callback
+   Onde ocorre: lib/store.js (função handleOAuthCallback)
+   Solução: Verificar se o callback foi processado corretamente
+
+3.4. Erro ao processar callback OAuth
+   Código: Não específico
+   Significado: Falha ao processar o retorno do Google OAuth
+   Onde ocorre: lib/store.js, app/auth/callback/page.jsx
+   Solução: Verificar logs e configuração do OAuth
+
+================================================================================
+4. ERROS DE VALIDAÇÃO DE FORMULÁRIOS
+================================================================================
+
+4.1. Campos obrigatórios vazios
+   Código: Não específico (validação client-side)
+   Significado: Campo obrigatório não foi preenchido
+   Onde ocorre: Todos os formulários (login, registro, perfil, metas, transações)
+   Solução: Preencher todos os campos obrigatórios
+   Mensagens comuns:
+   - "Por favor, preencha todos os campos"
+   - "Nome é obrigatório"
+   - "Email é obrigatório"
+   - "Senha é obrigatória"
+   - "Título é obrigatório"
+   - "Valor deve ser maior que zero"
+   - "Categoria é obrigatória"
+   - "Data-alvo é obrigatória"
+
+4.2. Email inválido
+   Código: Não específico (validação de regex)
+   Significado: Formato de email inválido
+   Onde ocorre: app/login/page.jsx, app/register/page.jsx, app/profile/page.jsx
+   Solução: Inserir email em formato válido (exemplo@dominio.com)
+   Mensagem: "Por favor, insira um email válido" ou "E-mail inválido"
+
+4.3. Senha muito curta
+   Código: Não específico (validação de comprimento)
+   Significado: Senha com menos de 6 caracteres
+   Onde ocorre: app/login/page.jsx, app/register/page.jsx
+   Solução: Criar senha com pelo menos 6 caracteres
+   Mensagem: "A senha deve ter pelo menos 6 caracteres"
+
+4.4. Telefone inválido
+   Código: Não específico (validação de formato)
+   Significado: Telefone com formato inválido ou incompleto
+   Onde ocorre: app/profile/page.jsx
+   Solução: Inserir telefone com formato válido (mínimo 10 dígitos)
+   Mensagem: "Telefone inválido"
+
+4.5. Valor monetário inválido
+   Código: Não específico (validação numérica)
+   Significado: Valor menor ou igual a zero
+   Onde ocorre: app/goals/add/page.jsx, app/transactions/add/page.jsx
+   Solução: Inserir valor maior que zero
+   Mensagem: "Valor deve ser maior que zero"
+
+4.6. Data no passado
+   Código: Não específico (validação de data)
+   Significado: Data-alvo de meta está no passado
+   Onde ocorre: app/goals/add/page.jsx
+   Solução: Selecionar data futura
+   Mensagem: "Data-alvo deve ser no futuro"
+
+4.7. Mensagem muito curta
+   Código: Não específico (validação de comprimento)
+   Significado: Mensagem de contato com menos de 10 caracteres
+   Onde ocorre: app/profile/contact/page.jsx
+   Solução: Escrever mensagem com pelo menos 10 caracteres
+   Mensagem: "Mensagem deve ter pelo menos 10 caracteres"
+
+4.8. Imagem muito grande
+   Código: Não específico (validação de tamanho)
+   Significado: Arquivo de imagem maior que 5MB
+   Onde ocorre: app/profile/page.jsx
+   Solução: Redimensionar ou comprimir a imagem
+   Mensagem: "A imagem deve ter no máximo 5MB"
+
+4.9. Tipo de arquivo inválido
+   Código: Não específico (validação de tipo)
+   Significado: Arquivo não é uma imagem válida
+   Onde ocorre: app/profile/page.jsx
+   Solução: Selecionar arquivo de imagem (JPG, PNG, etc.)
+   Mensagem: "Por favor, selecione uma imagem válida"
+
+================================================================================
+5. ERROS DE OPERAÇÕES (CRUD)
+================================================================================
+
+5.1. Erro ao criar transação
+   Código: Não específico
+   Significado: Falha ao inserir transação no banco de dados
+   Onde ocorre: lib/store.js (useTransactionsStore)
+   Solução: Verificar conexão com banco e dados fornecidos
+
+5.2. Erro ao atualizar transação
+   Código: Não específico
+   Significado: Falha ao atualizar transação existente
+   Onde ocorre: lib/store.js (useTransactionsStore)
+   Solução: Verificar se a transação existe e se os dados são válidos
+
+5.3. Erro ao remover transação
+   Código: Não específico
+   Significado: Falha ao fazer soft delete da transação
+   Onde ocorre: lib/store.js (useTransactionsStore), app/transactions/page.jsx
+   Solução: Verificar permissões e se a transação existe
+   Tratamento: Mensagem exibida: "Erro ao remover transação. Tente novamente."
+
+5.4. Erro ao criar meta
+   Código: Não específico
+   Significado: Falha ao inserir meta no banco de dados
+   Onde ocorre: lib/store.js (useGoalsStore)
+   Solução: Verificar conexão com banco e dados fornecidos
+
+5.5. Erro ao remover meta
+   Código: Não específico
+   Significado: Falha ao fazer soft delete da meta
+   Onde ocorre: lib/store.js (useGoalsStore), app/goals/page.jsx
+   Solução: Verificar permissões e se a meta existe
+   Tratamento: Mensagem exibida: "Erro ao remover meta. Tente novamente."
+
+5.6. Erro ao atualizar perfil
+   Código: Não específico
+   Significado: Falha ao atualizar dados do perfil do usuário
+   Onde ocorre: lib/store.js (função updateProfile), app/profile/page.jsx
+   Solução: Verificar se o usuário está autenticado e se os dados são válidos
+   Tratamento: Mensagem exibida: "Erro ao salvar perfil. Tente novamente."
+
+5.7. Erro ao deletar conta
+   Código: Não específico
+   Significado: Falha ao fazer soft delete da conta do usuário
+   Onde ocorre: lib/store.js (função deleteAccount), app/profile/page.jsx
+   Solução: Verificar permissões e conexão com banco
+   Tratamento: Mensagem exibida: "Erro ao apagar conta. Tente novamente."
+
+5.8. Erro ao abandonar desafio
+   Código: Não específico
+   Significado: Falha ao atualizar status do desafio para "abandoned"
+   Onde ocorre: lib/store.js (função abandonChallenge), app/challenges/page.jsx
+   Solução: Verificar se o desafio existe e se o usuário tem permissão
+
+================================================================================
+6. ERROS DE REDE E CONECTIVIDADE
+================================================================================
+
+6.1. Network Error / Failed to fetch
+   Código: Não específico (erro de rede)
+   Significado: Falha na conexão com o servidor Supabase
+   Onde ocorre: Qualquer operação que requer conexão com Supabase
+   Solução: Verificar conexão com internet e status do Supabase
+   Possíveis causas:
+   - Sem conexão com internet
+   - Servidor Supabase offline
+   - Firewall bloqueando requisições
+   - CORS não configurado corretamente
+
+6.2. Timeout
+   Código: Não específico
+   Significado: Requisição excedeu o tempo limite (timeout)
+   Onde ocorre: Operações que demoram muito para responder
+   Solução: Verificar conexão e tentar novamente
+
+6.3. CORS Error
+   Código: Não específico (erro de CORS)
+   Significado: Política de CORS bloqueando a requisição
+   Onde ocorre: Requisições entre diferentes origens
+   Solução: Configurar CORS no Supabase
+
+================================================================================
+7. ERROS DE SESSÃO E AUTENTICAÇÃO
+================================================================================
+
+7.1. Session expired
+   Código: Não específico
+   Significado: Sessão do usuário expirou
+   Onde ocorre: Qualquer operação após expiração da sessão
+   Solução: Fazer login novamente
+
+7.2. Token inválido
+   Código: Não específico
+   Significado: Token de autenticação inválido ou expirado
+   Onde ocorre: Operações que requerem autenticação
+   Solução: Fazer login novamente
+
+7.3. Usuário não autenticado
+   Código: Não específico (erro customizado)
+   Significado: Tentativa de operação sem estar autenticado
+   Onde ocorre: lib/store.js (várias funções)
+   Solução: Fazer login antes de realizar a operação
+   Mensagem: "Usuário não autenticado"
+
+================================================================================
+8. ERROS DE HASH E CRIPTOGRAFIA
+================================================================================
+
+8.1. Erro ao criar hash da senha
+   Código: Não específico
+   Significado: Falha ao gerar hash SHA-256 da senha
+   Onde ocorre: lib/store.js (funções register e handleOAuthCallback)
+   Solução: Verificar se Web Crypto API está disponível (navegadores modernos)
+   Nota: Em caso de falha, usa senha em texto (não recomendado)
+
+8.2. Erro ao criar hash OAuth
+   Código: Não específico
+   Significado: Falha ao gerar hash para usuário OAuth
+   Onde ocorre: lib/store.js (função handleOAuthCallback)
+   Solução: Verificar se Web Crypto API está disponível
+
+================================================================================
+9. ERROS DE PERFIL E DADOS DO USUÁRIO
+================================================================================
+
+9.1. Erro ao criar perfil
+   Código: Não específico
+   Significado: Falha ao criar registro em user_profiles
+   Onde ocorre: lib/store.js (funções register e handleOAuthCallback)
+   Solução: Verificar se a tabela user_profiles existe e se RLS está configurado
+   Nota: Sistema tenta novamente automaticamente em caso de falha
+
+9.2. Erro ao carregar dados do usuário
+   Código: Não específico
+   Significado: Falha ao carregar transações, metas ou outros dados
+   Onde ocorre: lib/store.js (função loadUserData)
+   Solução: Verificar conexão com banco e permissões
+
+9.3. Erro ao limpar sessão
+   Código: Não específico
+   Significado: Falha ao fazer logout do Supabase Auth
+   Onde ocorre: lib/store.js (função register - cleanup)
+   Solução: Não crítico, apenas log de erro
+
+================================================================================
+10. ERROS DE INTERFACE E UX
+================================================================================
+
+10.1. Erro ao carregar imagem
+   Código: Não específico (FileReader error)
+   Significado: Falha ao ler arquivo de imagem selecionado
+   Onde ocorre: app/profile/page.jsx (handlePhotoChange)
+   Solução: Verificar se o arquivo não está corrompido
+   Mensagem: "Erro ao carregar a imagem"
+
+10.2. Erro ao enviar mensagem
+   Código: Não específico
+   Significado: Falha ao enviar mensagem de contato
+   Onde ocorre: app/profile/contact/page.jsx
+   Solução: Verificar conexão e tentar novamente
+   Mensagem: "Erro ao enviar mensagem. Tente novamente."
+
+================================================================================
+11. CÓDIGOS DE STATUS HTTP
+================================================================================
+
+11.1. 200 - OK
+   Significado: Operação realizada com sucesso
+
+11.2. 400 - Bad Request
+   Significado: Requisição inválida (ex: validação falhou)
+   Onde ocorre: OAuth, validações de formulário
+
+11.3. 401 - Unauthorized
+   Significado: Não autenticado ou token inválido
+   Onde ocorre: Operações que requerem autenticação
+
+11.4. 403 - Forbidden
+   Significado: Autenticado mas sem permissão
+   Onde ocorre: Operações bloqueadas por RLS
+
+11.5. 404 - Not Found
+   Significado: Recurso não encontrado
+   Onde ocorre: Busca de registros inexistentes
+
+11.6. 409 - Conflict
+   Significado: Conflito (ex: email duplicado)
+   Onde ocorre: Tentativa de criar registro duplicado
+
+11.7. 422 - Unprocessable Entity
+   Significado: Dados válidos mas não processáveis
+   Onde ocorre: Validações de negócio
+
+11.8. 500 - Internal Server Error
+   Significado: Erro interno do servidor
+   Onde ocorre: Falhas no Supabase ou banco de dados
+
+11.9. 503 - Service Unavailable
+   Significado: Serviço temporariamente indisponível
+   Onde ocorre: Supabase em manutenção ou sobrecarga
+
+================================================================================
+12. ERROS ESPECÍFICOS DO SUPABASE
+================================================================================
+
+12.1. JWTExpired
+   Código: JWTExpired
+   Significado: Token JWT expirado
+   Solução: Fazer login novamente
+
+12.2. JWTInvalid
+   Código: JWTInvalid
+   Significado: Token JWT inválido
+   Solução: Fazer login novamente
+
+12.3. Invalid API key
+   Código: Não específico
+   Significado: Chave API do Supabase inválida ou expirada
+   Solução: Verificar variáveis de ambiente (.env.local)
+
+12.4. Database connection error
+   Código: Não específico
+   Significado: Falha na conexão com o banco de dados PostgreSQL
+   Solução: Verificar status do Supabase
+
+================================================================================
+13. GUIA DE RESOLUÇÃO DE PROBLEMAS
+================================================================================
+
+PROBLEMA: "Permissão negada" (42501)
+SOLUÇÃO:
+1. Acessar painel do Supabase
+2. Ir em Authentication > Policies
+3. Verificar se as políticas RLS estão configuradas
+4. Executar queries de criação de políticas se necessário
+
+PROBLEMA: "Email já cadastrado" (23505)
+SOLUÇÃO:
+1. Tentar fazer login com o email existente
+2. Usar "Esqueci a senha" se necessário
+3. Usar outro email para novo cadastro
+
+PROBLEMA: "Google OAuth não configurado"
+SOLUÇÃO:
+1. Acessar Google Cloud Console
+2. Criar OAuth Client ID
+3. Configurar redirect URI no Google
+4. Habilitar Google provider no Supabase
+5. Inserir Client ID e Secret no Supabase
+
+PROBLEMA: "Erro ao carregar dados"
+SOLUÇÃO:
+1. Verificar conexão com internet
+2. Verificar status do Supabase (status.supabase.com)
+3. Verificar se está autenticado
+4. Tentar fazer logout e login novamente
+
+PROBLEMA: "Erro de rede"
+SOLUÇÃO:
+1. Verificar conexão com internet
+2. Verificar firewall/proxy
+3. Verificar se Supabase está online
+4. Limpar cache do navegador
+
+================================================================================
+14. LOGS E DEBUGGING
+================================================================================
+
+Todos os erros são logados no console do navegador com:
+- console.error('Mensagem de erro:', error)
+
+Para debugar:
+1. Abrir DevTools (F12)
+2. Ir na aba Console
+3. Verificar erros em vermelho
+4. Verificar Network para erros de requisição
+5. Verificar Application > Local Storage para dados salvos
+
+================================================================================
+15. CONTATO E SUPORTE
+================================================================================
+
+Em caso de erros persistentes:
+1. Verificar logs do console
+2. Verificar status do Supabase
+3. Verificar documentação do Supabase
+4. Verificar se todas as tabelas e políticas estão configuradas
+
+================================================================================
+FIM DA DOCUMENTAÇÃO
+================================================================================
+
+Última atualização: 2025
+Versão: 1.0
+
