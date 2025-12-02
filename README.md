@@ -49,25 +49,78 @@ npm run dev
 ## 📁 Estrutura do Projeto
 
 ```
-Project-SimpleMoney/
-├── app/                    # Páginas e rotas (Next.js App Router)
-│   ├── layout.jsx         # Layout raiz da aplicação
-│   ├── page.jsx           # Página inicial (Loading)
-│   ├── providers.jsx      # Providers (Tanstack Query)
-│   ├── globals.css        # Estilos globais
-│   ├── login/             # Página de login
-│   ├── register/          # Página de registro
-│   └── forgot-password/   # Página de recuperação de senha
-├── components/            # Componentes reutilizáveis
-│   └── ui/                # Componentes de UI
-│       ├── Button.jsx     # Botão reutilizável
-│       ├── Input.jsx      # Input reutilizável
-│       ├── Checkbox.jsx   # Checkbox reutilizável
-│       └── Select.jsx     # Select reutilizável
-├── lib/                   # Utilitários e configurações
-│   └── store.js           # Store Zustand (estado global)
-└── public/                # Arquivos estáticos
+simple_money/
+├── app/                    # Rotas e páginas da aplicação (Next.js App Router)
+│   ├── layout.jsx          # Layout raiz com Providers e Footer
+│   ├── globals.css         # Estilos globais (Tailwind + custom)
+│   ├── page.jsx            # Tela inicial (animação de loading)
+│   ├── login/              # Autenticação de usuários
+│   │   └── page.jsx
+│   ├── register/           # Cadastro de novos usuários
+│   │   └── page.jsx
+│   ├── forgot-password/    # Recuperação de senha
+│   │   └── page.jsx
+│   ├── home/               # Dashboard principal do usuário
+│   │   └── page.jsx
+│   ├── profile/            # Perfil do usuário, contato e termos
+│   │   ├── page.jsx
+│   │   ├── contact/
+│   │   │   └── page.jsx
+│   │   └── terms/
+│   │       └── page.jsx
+│   ├── challenges/         # Página de desafios gamificados
+│   │   └── page.jsx
+│   ├── summary/            # Resumo financeiro e gráficos
+│   │   └── page.jsx
+│   ├── goals/              # Metas financeiras dos usuários
+│   │   ├── add/
+│   │   │   └── page.jsx
+│   │   ├── [id]/           # Detalhe de meta por ID
+│   │   │   └── page.jsx
+│   │   └── page.jsx        # Lista de metas
+│   ├── transactions/       # Listagem/adicionar transações
+│   │   ├── add/
+│   │   │   └── page.jsx
+│   │   └── page.jsx
+│   ├── providers.jsx       # Envolve a aplicação com TanStack Query e Theme
+│   └── hooks/              # Hooks globais customizados
+│       └── useAuthCheck.js
+├── components/             # Componentes reutilizáveis UI/Layout
+│   ├── layout/             # Header, Footer, Navigation, Modal
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── Navigation.jsx
+│   │   └── NotificationModal.jsx
+│   ├── goals/              # Components das metas
+│   │   ├── AddGoalForm.jsx
+│   │   └── GoalCard.jsx
+│   └── ui/                 # UI genérica (botão, input, cards, modal, seleção...)
+│       ├── Button.jsx
+│       ├── Card.jsx
+│       ├── Checkbox.jsx
+│       ├── CircularProgress.jsx
+│       ├── ConfirmModal.jsx
+│       ├── Input.jsx
+│       ├── Select.jsx
+│       └── SuccessModal.jsx
+├── lib/                    # Lógicas e "stores" (Zustand: dashboard, goals, profile...)
+│   ├── database.config.js  # Config de simulação de banco/Supabase
+│   ├── goalsStore.js       # Store de metas
+│   ├── soundManager.js     # Lógica de sons
+│   ├── sounds.js           # Tabela/efeitos de sons
+│   ├── store.js            # Estado global (auth, profile, dashboard, transações)
+│   ├── supabase.js         # Helpers para integração Supabase
+│   └── themeStore.js       # Store do tema (claro/escuro)
+├── jsconfig.json           # Alias de paths
+├── next.config.js          # Configuração Next.js
+├── package.json            # Dependências e scripts
+├── tailwind.config.js      # Configuração Tailwind CSS
 ```
+
+- Rotas Next.js App Router estão em `app/`, organizadas por página ou recurso (ex: `/home`, `/goals`, `/transactions`, `/summary`, `/challenges`, `/profile`).
+- Componentes globais ficam em `components/`.
+- Estados globais e lógica de negócios (Zustand e serviços) em `lib/`.
+- O design prioriza responsividade e boas práticas de UX/UI.
 
 ## 🎯 Funcionalidades
 

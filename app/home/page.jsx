@@ -178,10 +178,14 @@ export default function HomePage() {
         <main className="flex-1 p-4 md:p-6 space-y-4 md:space-y-6 max-w-6xl mx-auto w-full">
           {/* Saudação */}
           <div className="mb-4">
-            {/* O campo abaixo utiliza o nome inserido no momento do registro (user.name do store) */}
-            {/* <user> indica que este campo será preenchido com o nome do usuário cadastrado */}
+            {/* Saudações dinâmicas baseado no número de logins */}
             <h2 className="text-2xl md:text-3xl font-medium text-gray-900 dark:text-white tracking-tight" style={{ fontFamily: '"Segoe UI", "Helvetica Neue", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif', letterSpacing: '-0.02em' }}>
-              Olá, <span className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Usuário'}</span>! Bem-vindo de volta
+              Olá, <span className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Usuário'}</span>! {' '}
+              {user?.loginCount === 1
+                ? 'Bem-vindo'
+                : user?.loginCount && user?.loginCount > 1
+                  ? 'Bem-vindo de volta'
+                  : 'Bem-vindo'}
             </h2>
           </div>
 
