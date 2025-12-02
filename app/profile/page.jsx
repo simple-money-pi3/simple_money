@@ -76,7 +76,7 @@ const parsePhoneValue = (formattedPhone) => {
 export default function ProfilePage() {
   const router = useRouter();
   const { user, logout, updateProfile, deleteAccount } = useAuthStore();
-  const { points, achievements, getNotificationCount } = useProfileStore();
+  const { points, achievements, getNotificationCount, loadNotifications } = useProfileStore();
   const notificationCount = getNotificationCount();
   
   // Estados do modo de edição
@@ -108,6 +108,11 @@ export default function ProfilePage() {
       });
     }
   }, [user, isEditing]);
+
+  // Badge dinâmico: carrega notificações ao abrir o perfil
+  useEffect(() => {
+    loadNotifications();
+  }, []);
 
   /**
    * Função para fazer logout

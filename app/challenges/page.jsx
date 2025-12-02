@@ -150,38 +150,15 @@ export default function ChallengesPage() {
       .filter((challenge) => !acceptedIds.has(challenge.id))
       .map((challenge) => {
         const IconComponent = iconMap[challenge.icon] || Trophy;
-        
-        // Calcula progresso baseado em dados reais
-        let current = 0;
-        if (challenge.id === '3') {
-          // Meta Master - conta metas completadas
-          current = achievements.filter((a) => a.title.includes("Meta")).length;
-        } else if (challenge.id === '4') {
-          // Transações Pro - conta transações
-          current = transactions.length;
-        } else if (challenge.id === '5') {
-          // Primeiro Passo - verifica se tem transação
-          current = transactions.length > 0 ? 1 : 0;
-        } else {
-          // Desafios de economia - calcula economia total
-          const totalIncome = transactions
-            .filter((t) => t.type === 'income')
-            .reduce((sum, t) => sum + parseFloat(t.value || 0), 0);
-          const totalExpense = transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((sum, t) => sum + parseFloat(t.value || 0), 0);
-          current = Math.max(0, totalIncome - totalExpense);
-        }
-        
         return {
           ...challenge,
           icon: IconComponent,
-          current,
-          completed: current >= challenge.target,
+          current: 0, // Sempre 0 até aceitar
+          completed: false, // Nunca completo enquanto não aceitar
           accepted: false,
         };
       });
-  }, [availableChallenges, acceptedChallenges, achievements, transactions]);
+  }, [availableChallenges, acceptedChallenges]);
 
   /**
    * Calcula o progresso de um desafio em porcentagem
@@ -649,18 +626,31 @@ export default function ChallengesPage() {
                           <button
                             onClick={async () => {
                               soundManager.playClick();
+                              // Progresso inicial real ao aceitar
+                              let current = 0;
+                              if (challenge.id === '3') {
+                                current = achievements.filter((a) => a.title.includes('Meta')).length;
+                              } else if (challenge.id === '4') {
+                                current = transactions.length;
+                              } else if (challenge.id === '5') {
+                                current = transactions.length > 0 ? 1 : 0;
+                              } else {
+                                const totalIncome = transactions.filter((t) => t.type === 'income').reduce((sum, t) => sum + parseFloat(t.value || 0), 0);
+                                const totalExpense = transactions.filter((t) => t.type === 'expense').reduce((sum, t) => sum + parseFloat(t.value || 0), 0);
+                                current = Math.max(0, totalIncome - totalExpense);
+                              }
                               try {
                                 await acceptChallenge(challenge.id, {
                                   title: challenge.title,
                                   description: challenge.description,
                                   target: challenge.target,
                                   reward: challenge.reward,
+                                  current,
                                 });
                                 setSuccessMessage(
-                                  `Desafio "${challenge.title}" aceito! Comece a economizar para completá-lo.`
+                                  `Desafio "${challenge.title}" aceito!${current > 0 ? ' Seu progresso inicial foi contabilizado.' : ''}`
                                 );
                                 setIsSuccessModalOpen(true);
-                                // Recarrega os desafios
                                 await loadChallenges();
                               } catch (error) {
                                 console.error('Erro ao aceitar desafio:', error);
