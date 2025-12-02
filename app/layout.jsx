@@ -14,7 +14,7 @@ export const metadata = {
 
 /**
  * Layout raiz da aplicação
- * Envolve todas as páginas e fornece os providers necessários
+ * Envolve todas as páginas e fornece os providers necessário
  */
 export default function RootLayout({ children }) {
   return (
