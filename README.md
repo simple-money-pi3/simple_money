@@ -177,6 +177,15 @@ O projeto foi desenvolvido priorizando Desktop, mas é totalmente responsivo par
 - **Gray**: Tons de cinza para textos e backgrounds
 - **White**: Backgrounds e elementos claros
 
+## Integrantes  
+- Levi Vitor
+- Gabriel Taboza
+- Luan Banderia
+- Brenno Souza
+- Alexis Gonçalves
+- João Emanuel Melo Barbosa
+  
 ## 📄 Licença
 
 MIT License - veja o arquivo LICENSE para mais detalhes.
+
