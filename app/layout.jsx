@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
 import { Footer } from '@/components/layout/Footer'
+import { ChatBot } from '@/components/layout/ChatBot'
 
 // Configuração da fonte Inter
 const inter = Inter({ subsets: ['latin'] })
@@ -65,6 +66,7 @@ export default function RootLayout({ children }) {
           <div className="min-h-screen flex flex-col">
             {children}
             <Footer />
+            <ChatBot />
           </div>
         </Providers>
       </body>
