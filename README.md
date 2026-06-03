@@ -178,12 +178,11 @@ O projeto foi desenvolvido priorizando Desktop, mas é totalmente responsivo par
 - **White**: Backgrounds e elementos claros
 
 ## Integrantes  
-- Levi Vitor
 - Gabriel Taboza
-- Luan Banderia
 - Brenno Souza
 - Alexis Gonçalves
-- João Emanuel Melo Barbosa
+- Alyson Lima
+
   
 ## 📄 Licença
 
